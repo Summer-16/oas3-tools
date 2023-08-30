@@ -5,14 +5,16 @@ import * as express from 'express';
 
 export class Oas3AppOptions {
     public routing: any;
+    public parserLimit: string;
     public openApiValidator: OpenApiValidatorOpts;
     public logging: LoggingOptions;
     public swaggerUI: SwaggerUiOptions;
     public app: express.Application;
     public cors: any;
 
-    constructor(routingOpts: any, openApiValidatorOpts: OpenApiValidatorOpts, logging: LoggingOptions, swaggerUI: SwaggerUiOptions, app: express.Application, cors: any) {
+    constructor(routingOpts: any, parserLimit: any, openApiValidatorOpts: OpenApiValidatorOpts, logging: LoggingOptions, swaggerUI: SwaggerUiOptions, app: express.Application, cors: any) {
         this.routing = routingOpts;
+        this.parserLimit = parserLimit;
         this.openApiValidator = openApiValidatorOpts;
         this.swaggerUI = swaggerUI;
         if (!logging)
