@@ -12,13 +12,13 @@
     "url": "https://github.com/Summer-16"
   },
   "bugs": {
-    "url": "https://github.com/Summer-16/oas3-tools/issues"
+    "url": "https://github.com/Summer-16/swagger-tools-oas3/issues"
   },
-  "homepage": "https://github.com/Summer-16/oas3-tools",
+  "homepage": "https://github.com/Summer-16/swagger-tools-oas3",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Summer-16/oas3-tools.git"
+    "url": "git@github.com:Summer-16/swagger-tools-oas3.git"
   },
   "keywords": [
     "api",
