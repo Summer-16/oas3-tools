@@ -1,5 +1,5 @@
 {
-  "name": "oas3-tools",
+  "name": "swagger-tools-oas3",
   "version": "2.2.1",
   "description": "Swagger-UI and API Rest Routing for Open API v3.",
   "main": "dist/index.js",

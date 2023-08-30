@@ -16,16 +16,17 @@ class ExpressAppConfig {
     constructor(definitionPath, appOptions, customMiddlewares) {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
+        this.parserLimit = appOptions.parserLimit || '100kb';
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
         // Create new express app only if not passed by options
         this.app = appOptions.app || express();
         this.app.use(cors(appOptions.cors));
         const spec = fs.readFileSync(definitionPath, 'utf8');
         const swaggerDoc = jsyaml.load(spec);
-        this.app.use(bodyParser.urlencoded());
-        this.app.use(bodyParser.text());
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.raw({ type: 'application/pdf' }));
+        this.app.use(bodyParser.urlencoded({ limit: this.parserLimit }));
+        this.app.use(bodyParser.text({ limit: this.parserLimit }));
+        this.app.use(bodyParser.json({ limit: this.parserLimit }));
+        this.app.use(bodyParser.raw({ type: 'application/pdf', limit: this.parserLimit }));
         this.app.use(this.configureLogger(appOptions.logging));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
