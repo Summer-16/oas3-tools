@@ -2,34 +2,12 @@
   "name": "oas3-tools",
   "version": "2.2.0",
   "description": "Swagger-UI and API Rest Routing for Open API v3.",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "rm -rf dist/ && tsc"
+    "start": "node src/index.ts"
   },
-  "author": {
-    "name": "Hugo Mercado",
-    "email": "hugo.mario.mercado@gmail.com",
-    "url": "https://github.com/HugoMario"
-  },
-  "bugs": {
-    "url": "https://github.com/bug-hunters/oas3-tools/issues"
-  },
-  "homepage": "https://github.com/bug-hunters/oas3-tools",
+  "type": "module",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:bug-hunters/oas3-tools.git"
-  },
-  "keywords": [
-    "api",
-    "expressjs",
-    "middleware",
-    "swagger",
-    "openapi 3"
-  ],
-  "files": [
-    "dist"
-  ],
   "dependencies": {
     "async": "^3.2.4",
     "body-parser": "1.20.2",
