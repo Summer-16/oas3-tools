@@ -17,12 +17,14 @@ import { OpenApiRequestHandler } from 'express-openapi-validator/dist/framework/
 export class ExpressAppConfig {
     private app: express.Application;
     private routingOptions;
+    private parserLimit;
     private definitionPath;
     private openApiValidatorOptions;
 
     constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[]) {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
+        this.parserLimit = appOptions.parserLimit || '100kb';
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
 
         // Create new express app only if not passed by options
@@ -33,10 +35,10 @@ export class ExpressAppConfig {
         const spec = fs.readFileSync(definitionPath, 'utf8');
         const swaggerDoc = jsyaml.load(spec);
 
-        this.app.use(bodyParser.urlencoded());
-        this.app.use(bodyParser.text());
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.raw({ type: 'application/pdf' }));
+        this.app.use(bodyParser.urlencoded({ limit: this.parserLimit }));
+        this.app.use(bodyParser.text({ limit: this.parserLimit }));
+        this.app.use(bodyParser.json({ limit: this.parserLimit }));
+        this.app.use(bodyParser.raw({ type: 'application/pdf', limit: this.parserLimit }));
 
         this.app.use(this.configureLogger(appOptions.logging));
         this.app.use(express.json());

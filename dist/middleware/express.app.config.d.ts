@@ -4,6 +4,7 @@ import { OpenApiRequestHandler } from 'express-openapi-validator/dist/framework/
 export declare class ExpressAppConfig {
     private app;
     private routingOptions;
+    private parserLimit;
     private definitionPath;
     private openApiValidatorOptions;
     constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[]);
