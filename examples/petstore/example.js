@@ -3,7 +3,7 @@
 var path = require('path');
 var http = require('http');
 
-var oas3Tools = require('oas3-tools');
+var oas3Tools = require('../../dist/index');
 var serverPort = 8080;
 
 function validate(request, scopes, schema) {
@@ -29,7 +29,7 @@ var options = {
             }
         }
     }
-}; 
+};
 
 
 var expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/petstore.yaml'), options);
