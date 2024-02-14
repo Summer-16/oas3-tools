@@ -1,21 +1,13 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es2017",
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "target": "es2019",
+    "lib": ["es2019", "dom"],
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "typings.d.ts",
-    "src/**/*.ts",
-  ]
+  "exclude": ["node_modules"],
+  "include": ["typings.d.ts", "src/**/*.ts"]
 }

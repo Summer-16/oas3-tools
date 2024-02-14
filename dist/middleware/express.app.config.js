@@ -3,36 +3,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpressAppConfig = void 0;
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const swagger_ui_1 = require("./swagger.ui");
 const swagger_router_1 = require("./swagger.router");
 const swagger_parameters_1 = require("./swagger.parameters");
 const logger = require("morgan");
-const fs = require("fs");
-const jsyaml = require("js-yaml");
 const OpenApiValidator = require("express-openapi-validator");
 class ExpressAppConfig {
-    constructor(definitionPath, appOptions, customMiddlewares) {
+    constructor(definitionPath, appOptions, customMiddlewares, responseMiddleware) {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
-        this.parserLimit = appOptions.parserLimit || '100kb';
+        this.parserLimit = appOptions.parserLimit || '1mb';
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
         // Create new express app only if not passed by options
         this.app = appOptions.app || express();
+        // Enable CORS
         this.app.use(cors(appOptions.cors));
-        const spec = fs.readFileSync(definitionPath, 'utf8');
-        const swaggerDoc = jsyaml.load(spec);
-        this.app.use(bodyParser.urlencoded({ limit: this.parserLimit }));
-        this.app.use(bodyParser.text({ limit: this.parserLimit }));
-        this.app.use(bodyParser.json({ limit: this.parserLimit }));
-        this.app.use(bodyParser.raw({ type: 'application/pdf', limit: this.parserLimit }));
-        this.app.use(this.configureLogger(appOptions.logging));
-        this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: false }));
+        // Configure parsing middleware
+        this.app.use(express.json({ limit: this.parserLimit }));
+        this.app.use(express.urlencoded({ limit: this.parserLimit, extended: true }));
+        this.app.use(express.text({ limit: this.parserLimit }));
+        this.app.use(express.raw({ type: 'application/pdf' }));
+        this.app.use(express.raw({ type: 'application/octet-stream' }));
         this.app.use(cookieParser());
-        const swaggerUi = new swagger_ui_1.SwaggerUI(swaggerDoc, appOptions.swaggerUI);
-        this.app.use(swaggerUi.serveStaticContent());
+        // Configure logging middleware
+        this.app.use(this.configureLogger(appOptions.logging));
+        // Initialize swagger docs
+        (0, swagger_ui_1.initSwaggerDocs)(this.app, this.definitionPath);
+        // Bind custom middlewares which need access to the OpenApiRequest context before validator initialization
+        (responseMiddleware || []).forEach(middleware => this.app.use(middleware));
+        // Initialize OpenAPI validator
         this.app.use(OpenApiValidator.middleware(this.openApiValidatorOptions));
         this.app.use(new swagger_parameters_1.SwaggerParameters().checkParameters());
         // Bind custom middlewares which need access to the OpenApiRequest context before controllers initialization
