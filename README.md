@@ -1,8 +1,21 @@
-# swagger-tools-oas3
+# [swagger-tools-oas3](https://www.npmjs.com/package/swagger-tools-oas3)
 This tool helps to setup a Express.js server along with Swagger UI. It also includes a middleware to validate the request and response against the provided OpenAPI 3.0 specification.
 
 # Aim of this fork
 The original project is not maintained anymore and has some vulnerabilities. This fork aims to fix those vulnerabilities and keep the project up to date.
+
+# Table of Contents
+- [swagger-tools-oas3](#swagger-tools-oas3)
+- [Aim of this fork](#aim-of-this-fork)
+- [Table of Contents](#table-of-contents)
+- [Changelogs](#changelogs)
+  - [1.1.0](#110)
+  - [1.0.0](#100)
+- [Usage](#usage)
+  - [Installation](#installation)
+  - [Middleware Options](#middleware-options)
+  - [Example](#example)
+
 
 # Changelogs
 ## 1.1.0
@@ -18,7 +31,23 @@ The original project is not maintained anymore and has some vulnerabilities. Thi
 - Updated dependencies to fix vulnerabilities.
 - Added option to pass limit for body-parser.
 
-# Example
+# Usage
+## Installation
+Install the package using npm:
+```
+npm install swagger-tools-oas3
+```
+
+## Middleware Options
+The expressAppConfig function accepts the following options:
+- definitionPath: The path to your OpenAPI 3.0 specification file.
+- appOptions: An object containing additional configuration options:
+  - routing: An object specifying the routing options, such as the path to your controller files.
+  - parserLimit: (Optional) The limit for body parsing (default: '1mb').
+  - app: (Optional) An existing Express.js app instance to use.
+  - cors: (Optional) CORS configuration options.
+
+## Example
 ```javascript
 const options = {
     routing: {
