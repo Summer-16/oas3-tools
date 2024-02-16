@@ -2,17 +2,14 @@
 
 import * as express from 'express';
 import cookieParser = require('cookie-parser');
-import bodyParser = require('body-parser');
 import cors = require('cors');
-import { SwaggerUI } from './swagger.ui';
+import { initSwaggerDocs } from './swagger.ui';
 import { SwaggerRouter } from './swagger.router';
 import { SwaggerParameters } from './swagger.parameters';
 import * as logger from 'morgan';
-import * as fs from 'fs';
-import * as jsyaml from 'js-yaml';
 import * as OpenApiValidator from 'express-openapi-validator';
 import { Oas3AppOptions } from './oas3.options';
-import { OpenApiRequestHandler } from 'express-openapi-validator/dist/framework/types'
+import { OpenApiRequestHandler } from 'express-openapi-validator/dist/framework/types';
 
 export class ExpressAppConfig {
     private app: express.Application;
@@ -21,39 +18,34 @@ export class ExpressAppConfig {
     private definitionPath;
     private openApiValidatorOptions;
 
-    constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[]) {
+    constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[], responseMiddleware?: OpenApiRequestHandler[]) {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
-        this.parserLimit = appOptions.parserLimit || '100kb';
+        this.parserLimit = appOptions.parserLimit || '1mb';
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
-
         // Create new express app only if not passed by options
         this.app = appOptions.app || express();
-
+        // Enable CORS
         this.app.use(cors(appOptions.cors));
-
-        const spec = fs.readFileSync(definitionPath, 'utf8');
-        const swaggerDoc = jsyaml.load(spec);
-
-        this.app.use(bodyParser.urlencoded({ limit: this.parserLimit }));
-        this.app.use(bodyParser.text({ limit: this.parserLimit }));
-        this.app.use(bodyParser.json({ limit: this.parserLimit }));
-        this.app.use(bodyParser.raw({ type: 'application/pdf', limit: this.parserLimit }));
-
-        this.app.use(this.configureLogger(appOptions.logging));
-        this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: false }));
+        // Configure parsing middleware
+        this.app.use(express.json({ limit: this.parserLimit }));
+        this.app.use(express.urlencoded({ limit: this.parserLimit, extended: true }));
+        this.app.use(express.text({ limit: this.parserLimit }));
+        this.app.use(express.raw({ type: 'application/pdf' }));
+        this.app.use(express.raw({ type: 'application/octet-stream' }));
         this.app.use(cookieParser());
-
-        const swaggerUi = new SwaggerUI(swaggerDoc, appOptions.swaggerUI);
-        this.app.use(swaggerUi.serveStaticContent());
-
+        // Configure logging middleware
+        this.app.use(this.configureLogger(appOptions.logging));
+        // Initialize swagger docs
+        initSwaggerDocs(this.app, this.definitionPath);
+        // Bind custom middlewares which need access to the OpenApiRequest context before validator initialization
+        (responseMiddleware || []).forEach(middleware => this.app.use(middleware));
+        // Initialize OpenAPI validator
         this.app.use(OpenApiValidator.middleware(this.openApiValidatorOptions));
         this.app.use(new SwaggerParameters().checkParameters());
         // Bind custom middlewares which need access to the OpenApiRequest context before controllers initialization
-        (customMiddlewares || []).forEach(middleware => this.app.use(middleware))
+        (customMiddlewares || []).forEach(middleware => this.app.use(middleware));
         this.app.use(new SwaggerRouter().initialize(this.routingOptions));
-
         this.app.use(this.errorHandler);
     }
 
@@ -63,10 +55,8 @@ export class ExpressAppConfig {
             this.openApiValidatorOptions = { apiSpec: definitionPath };
             return;
         }
-
         // use the given options
         this.openApiValidatorOptions = appOptions.openApiValidator;
-
         // Override apiSpec with definition Path to keep the prior behavior
         this.openApiValidatorOptions.apiSpec = definitionPath;
     }
