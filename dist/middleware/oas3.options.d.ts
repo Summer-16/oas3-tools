@@ -8,5 +8,6 @@ export declare class Oas3AppOptions {
     logging: LoggingOptions;
     app: express.Application;
     cors: any;
-    constructor(routingOpts: any, parserLimit: any, openApiValidatorOpts: OpenApiValidatorOpts, logging: LoggingOptions, app: express.Application, cors: any);
+    internalLogs: boolean;
+    constructor(routingOpts: any, parserLimit: any, openApiValidatorOpts: OpenApiValidatorOpts, logging: LoggingOptions, app: express.Application, cors: any, internalLogs: boolean);
 }

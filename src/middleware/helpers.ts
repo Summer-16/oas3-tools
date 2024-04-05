@@ -26,33 +26,30 @@
 
 import { each, capitalize, split } from 'lodash';
 
-export function debugError(err, debug) {
-  var reason = err.message.replace(/^.*validation failed: /, '');
-
+export function debugError(err, logger) {
+  let reason = err.message.replace(/^.*validation failed: /, '');
   reason = reason.charAt(0).toUpperCase() + reason.substring(1);
-
-  debug('  Reason: %s', reason);
+  logger.log('  Reason: %s', reason);
 
   if (err.failedValidation === true) {
     if (err.results) {
-      debug('  Errors:');
-
+      logger.log('  Errors:');
       each(err.results.errors, function (error, index: number) {
-        debug('    %d:', index);
-        debug('      code: %s', error.code);
-        debug('      message: %s', error.message);
-        debug('      path: %s', JSON.stringify(error.path));
+        logger.log('    %d:', index);
+        logger.log('      code: %s', error.code);
+        logger.log('      message: %s', error.message);
+        logger.log('      path: %s', JSON.stringify(error.path));
       });
     }
   }
 
   if (err.stack) {
-    debug('  Stack:');
+    logger.log('  Stack:');
 
     each(err.stack.split('\n'), function (line, index: number) {
       // Skip the first line since it's in the reasonx
       if (index > 0) {
-        debug('  %s', line);
+        logger.log('  %s', line);
       }
     });
   }

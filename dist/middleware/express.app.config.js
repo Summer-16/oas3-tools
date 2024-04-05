@@ -4,6 +4,7 @@ exports.ExpressAppConfig = void 0;
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const helmet = require("helmet");
 const swagger_ui_1 = require("./swagger.ui");
 const swagger_router_1 = require("./swagger.router");
 const swagger_parameters_1 = require("./swagger.parameters");
@@ -14,11 +15,15 @@ class ExpressAppConfig {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
         this.parserLimit = appOptions.parserLimit || '1mb';
+        this.internalLogs = appOptions.internalLogs === false ? false : true;
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
         // Create new express app only if not passed by options
         this.app = appOptions.app || express();
+        this.app.use(helmet());
         // Enable CORS
-        this.app.use(cors(appOptions.cors));
+        if (appOptions === null || appOptions === void 0 ? void 0 : appOptions.cors) {
+            this.app.use(cors(appOptions.cors));
+        }
         // Configure parsing middleware
         this.app.use(express.json({ limit: this.parserLimit }));
         this.app.use(express.urlencoded({ limit: this.parserLimit, extended: true }));
@@ -27,7 +32,9 @@ class ExpressAppConfig {
         this.app.use(express.raw({ type: 'application/octet-stream' }));
         this.app.use(cookieParser());
         // Configure logging middleware
-        this.app.use(this.configureLogger(appOptions.logging));
+        if (appOptions === null || appOptions === void 0 ? void 0 : appOptions.logging) {
+            this.app.use(this.configureLogger(appOptions.logging));
+        }
         // Initialize swagger docs
         (0, swagger_ui_1.initSwaggerDocs)(this.app, this.definitionPath);
         // Bind custom middlewares which need access to the OpenApiRequest context before validator initialization
@@ -37,7 +44,7 @@ class ExpressAppConfig {
         this.app.use(new swagger_parameters_1.SwaggerParameters().checkParameters());
         // Bind custom middlewares which need access to the OpenApiRequest context before controllers initialization
         (customMiddlewares || []).forEach(middleware => this.app.use(middleware));
-        this.app.use(new swagger_router_1.SwaggerRouter().initialize(this.routingOptions));
+        this.app.use(new swagger_router_1.SwaggerRouter({ internalLogs: this.internalLogs }).initialize(this.routingOptions));
         this.app.use(this.errorHandler);
     }
     setOpenApiValidatorOptions(definitionPath, appOptions) {

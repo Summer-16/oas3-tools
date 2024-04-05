@@ -7,6 +7,7 @@ export declare class ExpressAppConfig {
     private parserLimit;
     private definitionPath;
     private openApiValidatorOptions;
+    private internalLogs;
     constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[], responseMiddleware?: OpenApiRequestHandler[]);
     private setOpenApiValidatorOptions;
     configureLogger(loggerOptions: any): any;

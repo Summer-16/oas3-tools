@@ -9,15 +9,23 @@ export class Oas3AppOptions {
     public logging: LoggingOptions;
     public app: express.Application;
     public cors: any;
+    public internalLogs: boolean;
 
-    constructor(routingOpts: any, parserLimit: any, openApiValidatorOpts: OpenApiValidatorOpts, logging: LoggingOptions, app: express.Application, cors: any) {
+    constructor(
+        routingOpts: any,
+        parserLimit: any,
+        openApiValidatorOpts: OpenApiValidatorOpts,
+        logging: LoggingOptions,
+        app: express.Application,
+        cors: any,
+        internalLogs: boolean
+    ) {
         this.routing = routingOpts;
         this.parserLimit = parserLimit;
         this.openApiValidator = openApiValidatorOpts;
-        if (!logging)
-            logging = new LoggingOptions(null, null);
         this.logging = logging;
         this.app = app;
         this.cors = cors;
+        this.internalLogs = internalLogs;
     }
 }
