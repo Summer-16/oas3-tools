@@ -25,27 +25,27 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeDashElementToCamelCase = exports.debugError = void 0;
 const lodash_1 = require("lodash");
-function debugError(err, debug) {
-    var reason = err.message.replace(/^.*validation failed: /, '');
+function debugError(err, logger) {
+    let reason = err.message.replace(/^.*validation failed: /, '');
     reason = reason.charAt(0).toUpperCase() + reason.substring(1);
-    debug('  Reason: %s', reason);
+    logger.log('  Reason: %s', reason);
     if (err.failedValidation === true) {
         if (err.results) {
-            debug('  Errors:');
+            logger.log('  Errors:');
             (0, lodash_1.each)(err.results.errors, function (error, index) {
-                debug('    %d:', index);
-                debug('      code: %s', error.code);
-                debug('      message: %s', error.message);
-                debug('      path: %s', JSON.stringify(error.path));
+                logger.log('    %d:', index);
+                logger.log('      code: %s', error.code);
+                logger.log('      message: %s', error.message);
+                logger.log('      path: %s', JSON.stringify(error.path));
             });
         }
     }
     if (err.stack) {
-        debug('  Stack:');
+        logger.log('  Stack:');
         (0, lodash_1.each)(err.stack.split('\n'), function (line, index) {
             // Skip the first line since it's in the reasonx
             if (index > 0) {
-                debug('  %s', line);
+                logger.log('  %s', line);
             }
         });
     }

@@ -3,6 +3,7 @@
 import * as express from 'express';
 import cookieParser = require('cookie-parser');
 import cors = require('cors');
+const helmet = require("helmet");
 import { initSwaggerDocs } from './swagger.ui';
 import { SwaggerRouter } from './swagger.router';
 import { SwaggerParameters } from './swagger.parameters';
@@ -17,16 +18,21 @@ export class ExpressAppConfig {
     private parserLimit;
     private definitionPath;
     private openApiValidatorOptions;
+    private internalLogs;
 
     constructor(definitionPath: string, appOptions: Oas3AppOptions, customMiddlewares?: OpenApiRequestHandler[], responseMiddleware?: OpenApiRequestHandler[]) {
         this.definitionPath = definitionPath;
         this.routingOptions = appOptions.routing;
         this.parserLimit = appOptions.parserLimit || '1mb';
+        this.internalLogs = appOptions.internalLogs === false ? false : true;
         this.setOpenApiValidatorOptions(definitionPath, appOptions);
         // Create new express app only if not passed by options
         this.app = appOptions.app || express();
+        this.app.use(helmet());
         // Enable CORS
-        this.app.use(cors(appOptions.cors));
+        if (appOptions?.cors) {
+            this.app.use(cors(appOptions.cors));
+        }
         // Configure parsing middleware
         this.app.use(express.json({ limit: this.parserLimit }));
         this.app.use(express.urlencoded({ limit: this.parserLimit, extended: true }));
@@ -35,7 +41,9 @@ export class ExpressAppConfig {
         this.app.use(express.raw({ type: 'application/octet-stream' }));
         this.app.use(cookieParser());
         // Configure logging middleware
-        this.app.use(this.configureLogger(appOptions.logging));
+        if (appOptions?.logging) {
+            this.app.use(this.configureLogger(appOptions.logging));
+        }
         // Initialize swagger docs
         initSwaggerDocs(this.app, this.definitionPath);
         // Bind custom middlewares which need access to the OpenApiRequest context before validator initialization
@@ -45,7 +53,7 @@ export class ExpressAppConfig {
         this.app.use(new SwaggerParameters().checkParameters());
         // Bind custom middlewares which need access to the OpenApiRequest context before controllers initialization
         (customMiddlewares || []).forEach(middleware => this.app.use(middleware));
-        this.app.use(new SwaggerRouter().initialize(this.routingOptions));
+        this.app.use(new SwaggerRouter({ internalLogs: this.internalLogs }).initialize(this.routingOptions));
         this.app.use(this.errorHandler);
     }
 

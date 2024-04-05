@@ -5,31 +5,33 @@ const lodash_1 = require("lodash");
 const fs = require("fs");
 const helpers_1 = require("./helpers");
 const path = require("path");
-const debug_1 = require("debug");
-const debug = (0, debug_1.default)("oas3-tools:routing");
+const logger_1 = require("./logger");
 class SwaggerRouter {
+    constructor({ internalLogs }) {
+        this.logger = new logger_1.default(internalLogs);
+    }
     handlerCacheFromDir(dirOrDirs) {
         const handlerCache = {};
         const jsFileRegex = /\.(coffee|js|ts)$/;
-        var dirs = new Array();
+        let dirs = new Array();
         if ((0, lodash_1.isArray)(dirOrDirs)) {
             dirs = dirOrDirs;
         }
         else {
             dirs.push(dirOrDirs);
         }
-        debug('  Controllers:');
-        (0, lodash_1.each)(dirs, function (dir) {
-            (0, lodash_1.each)(fs.readdirSync(dir), function (file) {
+        this.logger.log('  Controllers:');
+        (0, lodash_1.each)(dirs, (dir) => {
+            (0, lodash_1.each)(fs.readdirSync(dir), (file) => {
                 const controllerName = file.replace(jsFileRegex, '');
                 let controller;
                 if (file.match(jsFileRegex) && file.indexOf(".test.js") === -1) {
                     controller = require(path.resolve(path.join(dir, controllerName)));
-                    debug('    %s%s:', path.resolve(path.join(dir, file)), ((0, lodash_1.isPlainObject)(controller) ? '' : ' (not an object, skipped)'));
+                    this.logger.log('    %s%s:', path.resolve(path.join(dir, file)), ((0, lodash_1.isPlainObject)(controller) ? '' : ' (not an object, skipped)'));
                     if ((0, lodash_1.isPlainObject)(controller)) {
-                        (0, lodash_1.each)(controller, function (value, name) {
+                        (0, lodash_1.each)(controller, (value, name) => {
                             let handlerId = (controllerName + '_' + name).toLowerCase();
-                            debug('      %s%s', handlerId, ((0, lodash_1.isFunction)(value) ? '' : ' (not a function, skipped)'));
+                            this.logger.log('      %s%s', handlerId, ((0, lodash_1.isFunction)(value) ? '' : ' (not a function, skipped)'));
                             if ((0, lodash_1.isFunction)(value) && !handlerCache[handlerId]) {
                                 handlerCache[handlerId] = value;
                             }
@@ -41,18 +43,18 @@ class SwaggerRouter {
         return handlerCache;
     }
     initialize(options) {
-        var handlerCache = {};
-        debug('Initializing swagger-router middleware');
+        let handlerCache = {};
+        this.logger.log('Initializing swagger-router middleware');
         // Set the defaults
         options = (0, lodash_1.defaults)(options || {}, {
             controllers: {},
             useStubs: false // not for now.
         });
-        console.log('  Mock mode: %s', options.useStubs === true ? 'enabled' : 'disabled');
+        this.logger.log('  Mock mode: %s', options.useStubs === true ? 'enabled' : 'disabled');
         if ((0, lodash_1.isPlainObject)(options.controllers)) {
             // Create the handler cache from the passed in controllers object
-            (0, lodash_1.each)(options.controllers, function (func, handlerName) {
-                console.log('    %s', handlerName);
+            (0, lodash_1.each)(options.controllers, (func, handlerName) => {
+                this.logger.log('    %s', handlerName);
                 if (!(0, lodash_1.isFunction)(func)) {
                     throw new Error('options.controllers values must be functions');
                 }
@@ -86,14 +88,14 @@ class SwaggerRouter {
             if ((0, lodash_1.isUndefined)(req.openapi)) {
                 return next(rErr);
             }
-            debug('%s %s', req.method, req.url);
-            debug('  Will process: %s', (0, lodash_1.isUndefined)(operation) ? 'no' : 'yes');
+            this.logger.log('%s %s', req.method, req.url);
+            this.logger.log('  Will process: %s', (0, lodash_1.isUndefined)(operation) ? 'no' : 'yes');
             if (operation) {
                 handlerName = getHandlerName(req);
                 handler = handlerCache[handlerName];
-                debug('  Route handler: %s', handlerName);
-                debug('    Missing: %s', (0, lodash_1.isUndefined)(handler) ? 'yes' : 'no');
-                debug('    Ignored: %s', options.ignoreMissingHandlers === true ? 'yes' : 'no');
+                this.logger.log('  Route handler: %s', handlerName);
+                this.logger.log('    Missing: %s', (0, lodash_1.isUndefined)(handler) ? 'yes' : 'no');
+                this.logger.log('    Ignored: %s', options.ignoreMissingHandlers === true ? 'yes' : 'no');
                 if ((0, lodash_1.isUndefined)(handler)) {
                     return send405(req, res, next);
                 }
@@ -103,7 +105,7 @@ class SwaggerRouter {
                     }
                     catch (err) {
                         rErr = err;
-                        debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
+                        this.logger.log('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
                     }
                 }
                 else if (options.ignoreMissingHandlers !== true) {
@@ -112,11 +114,11 @@ class SwaggerRouter {
                 }
             }
             else {
-                debug('  No handler for method: %s', req.method);
+                this.logger.log('  No handler for method: %s', req.method);
                 return send405(req, res, next);
             }
             if (rErr) {
-                (0, helpers_1.debugError)(rErr, debug);
+                (0, helpers_1.debugError)(rErr, this.logger);
             }
             return next(rErr);
         };

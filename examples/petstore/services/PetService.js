@@ -7,8 +7,8 @@
  * body Pet Pet object that needs to be added to the store
  * no response value expected for this operation
  **/
-exports.addPet = function(body) {
-    return new Promise(function(resolve, reject) {
+exports.addPet = function (body) {
+    return new Promise(function (resolve, reject) {
         resolve();
     });
 };
@@ -21,26 +21,26 @@ exports.addPet = function(body) {
  * sessionid String  (optional)
  * returns List
  **/
-exports.findPetsByStatus = function(status,sessionid) {
-    return new Promise(function(resolve, reject) {
-        var examples = {};
+exports.findPetsByStatus = function (status, sessionid) {
+    return new Promise(function (resolve, reject) {
+        const examples = {};
         examples['application/json'] = [{
-            'photoUrls': [ 'photoUrls', 'photoUrls' ],
-            'name' : 'doggie',
-            'id' : 0,
-            'category' : {
-                'name' : 'name',
-                'id' : 6
+            'photoUrls': ['photoUrls', 'photoUrls'],
+            'name': 'doggie',
+            'id': 0,
+            'category': {
+                'name': 'name',
+                'id': 6
             },
-            'tags' : [ {
-                'name' : 'name',
-                'id' : 1
+            'tags': [{
+                'name': 'name',
+                'id': 1
             }, {
-                'name' : 'name',
-                'id' : 1
-            } ],
-            'status' : 'available'
-        } ];
+                'name': 'name',
+                'id': 1
+            }],
+            'status': 'available'
+        }];
         if (Object.keys(examples).length > 0) {
             resolve(examples[Object.keys(examples)[0]]);
         } else {
@@ -56,26 +56,26 @@ exports.findPetsByStatus = function(status,sessionid) {
  * petId Long ID of pet to return
  * returns Pet
  **/
-exports.getPetById = function(petId) {
+exports.getPetById = function (petId) {
 
-    return new Promise(function(resolve, reject) {
-        var examples = {};
+    return new Promise(function (resolve, reject) {
+        const examples = {};
         examples['application/json'] = {
-            'photoUrls' : [ 'photoUrls', 'photoUrls' ],
-            'name' : 'doggie',
-            'id' : 0,
-            'category' : {
-                'name' : 'name',
-                'id' : 6
+            'photoUrls': ['photoUrls', 'photoUrls'],
+            'name': 'doggie',
+            'id': 0,
+            'category': {
+                'name': 'name',
+                'id': 6
             },
-            'tags' : [ {
-                'name' : 'name',
-                'id' : 1
+            'tags': [{
+                'name': 'name',
+                'id': 1
             }, {
-                'name' : 'name',
-                'id' : 1
-            } ],
-            'status' : 'available'
+                'name': 'name',
+                'id': 1
+            }],
+            'status': 'available'
         };
         if (Object.keys(examples).length > 0) {
             resolve(examples[Object.keys(examples)[0]]);
@@ -84,4 +84,3 @@ exports.getPetById = function(petId) {
         }
     });
 };
-

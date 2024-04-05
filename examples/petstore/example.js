@@ -1,10 +1,9 @@
 'use strict';
 
-var path = require('path');
-var http = require('http');
-
-var oas3Tools = require('../../dist/index');
-var serverPort = 8080;
+const path = require('path');
+const http = require('http');
+const oas3Tools = require('../../dist/index');
+const serverPort = 8080;
 
 function validate(request, scopes, schema) {
     // security stuff here
@@ -12,7 +11,7 @@ function validate(request, scopes, schema) {
 }
 
 // swaggerRouter configuration
-var options = {
+const options = {
     routing: {
         controllers: path.join(__dirname, './controllers')
     },
@@ -32,8 +31,8 @@ var options = {
 };
 
 
-var expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/petstore.yaml'), options);
-var app = expressAppConfig.getApp();
+const expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/petstore.yaml'), options);
+const app = expressAppConfig.getApp();
 
 // Initialize the Swagger middleware
 http.createServer(app).listen(serverPort, function () {
