@@ -10,6 +10,7 @@ The original project is not maintained anymore and has some vulnerabilities. Thi
   - [Middleware Options](#middleware-options)
   - [Example](#example)
 - [Changelogs](#changelogs)
+  - [1.3.0](#130)
   - [1.2.0](#120)
   - [1.1.0](#110)
   - [1.0.0](#100)
@@ -97,6 +98,10 @@ const app = expressAppConfig.getApp();
 ```
 
 # Changelogs
+## 1.3.0
+- Express.js is updated from 4 to 5.
+- Updated dependencies to the latest version.
+
 ## 1.2.0
 - Updated dependencies to the latest version.
 - Added helmet middleware to secure the app.
