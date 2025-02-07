@@ -7,7 +7,7 @@ const swagger_ui_dist_1 = require("swagger-ui-dist");
 const express = require("express");
 function initSwaggerDocs(app, definitionPath) {
     const swaggerEndpoint = '/docs';
-    const swaggerDefName = 'docs';
+    const swaggerDefName = 'api-specifications.yaml';
     const swaggerUiAssetPath = (0, swagger_ui_dist_1.getAbsoluteFSPath)();
     // A workaround for swagger-ui-dist not being able to set custom swagger URL
     const swaggerInitializerContent = fs
@@ -26,3 +26,4 @@ function initSwaggerDocs(app, definitionPath) {
         res.sendFile(definitionPath);
     });
 }
+//# sourceMappingURL=swagger.ui.js.map

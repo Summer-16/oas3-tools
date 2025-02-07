@@ -7,7 +7,7 @@ import * as express from 'express';
 
 export function initSwaggerDocs(app: express.Application, definitionPath: string) {
   const swaggerEndpoint = '/docs';
-  const swaggerDefName = 'apiSpecifications.yaml';
+  const swaggerDefName = 'api-specifications.yaml';
   const swaggerUiAssetPath = getAbsoluteFSPath();
 
   // A workaround for swagger-ui-dist not being able to set custom swagger URL
