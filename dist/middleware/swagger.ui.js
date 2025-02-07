@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initSwaggerDocs = void 0;
+exports.initSwaggerDocs = initSwaggerDocs;
 const fs = require("fs");
 const path = require("path");
 const swagger_ui_dist_1 = require("swagger-ui-dist");
@@ -26,5 +26,4 @@ function initSwaggerDocs(app, definitionPath) {
         res.sendFile(definitionPath);
     });
 }
-exports.initSwaggerDocs = initSwaggerDocs;
 //# sourceMappingURL=swagger.ui.js.map

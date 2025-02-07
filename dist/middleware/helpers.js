@@ -23,7 +23,8 @@
  */
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeDashElementToCamelCase = exports.debugError = void 0;
+exports.debugError = debugError;
+exports.removeDashElementToCamelCase = removeDashElementToCamelCase;
 const lodash_1 = require("lodash");
 function debugError(err, logger) {
     let reason = err.message.replace(/^.*validation failed: /, '');
@@ -50,7 +51,6 @@ function debugError(err, logger) {
         });
     }
 }
-exports.debugError = debugError;
 ;
 function removeDashElementToCamelCase(str) {
     const pieces = (0, lodash_1.split)(str, '-');
@@ -63,5 +63,4 @@ function removeDashElementToCamelCase(str) {
     }
     return result;
 }
-exports.removeDashElementToCamelCase = removeDashElementToCamelCase;
 //# sourceMappingURL=helpers.js.map
